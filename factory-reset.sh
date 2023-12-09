@@ -32,7 +32,9 @@ if grep -q "$new_username" /tmp/userlist.txt; then
   exit
 fi
 
-useradd -m "$new_username"
+useradd -m -g users -G wheel "$new_username"
+usermod -aG video "$new_username"
+usermod -aG audio "$new_username"
 passwd "$new_username"  # Set password for the new user
 
 # Reboot the system
