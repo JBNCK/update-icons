@@ -16,16 +16,25 @@ case "$choice" in
       userdel -r "$user"
       echo "Deleted user: $user"
     done
-    
-    # Prompt for new username and password
-    read -p "Enter the new username: " new_username
-    useradd -m "$new_username"
-    passwd "$new_username"  # Set password for the new user
-    
-    # Reboot the system
-    read -p "Factory reset complete. Press Enter to reboot the system..."
-    reboot
+
+    # Refresh user database
+    echo "Refreshing user database..."
+    grep -E ':[^!*]' /etc/passwd | cut -d: -f1 > /tmp/userlist.txt
     ;;
-  n|N ) echo "Factory reset aborted";;
-  * ) echo "Invalid choice. Factory reset aborted";;
+  n|N ) echo "Factory reset aborted"; exit ;;
+  * ) echo "Invalid choice. Factory reset aborted"; exit ;;
 esac
+
+# Prompt for new username and password
+read -p "Enter the new username: " new_username
+if grep -q "$new_username" /tmp/userlist.txt; then
+  echo "User $new_username already exists. Factory reset aborted."
+  exit
+fi
+
+useradd -m "$new_username"
+passwd "$new_username"  # Set password for the new user
+
+# Reboot the system
+read -p "Factory reset complete. Press Enter to reboot the system..."
+reboot
