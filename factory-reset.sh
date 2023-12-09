@@ -75,6 +75,7 @@ case "$choice" in
 esac
 
 # Prompt for new username and password
+clear
 read -p "Enter the new username: " new_username
 if grep -q "$new_username" /tmp/userlist.txt; then
   echo "User $new_username already exists. Factory reset aborted."
@@ -84,9 +85,10 @@ fi
 read -p "Enter the full name of the new user: " new_full_name
 useradd -m -g users -G wheel "$new_username"
 chfn -f "$new_full_name" "$new_username"
-sudo -u "$new_username" /usr/bin/flatpak --user remote-add if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+su "$new_username" -c "/usr/bin/flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo"
 usermod -aG video "$new_username"
 usermod -aG audio "$new_username"
+clear
 passwd "$new_username"  # Set password for the new user
 
 # Re-enable GDM
@@ -95,5 +97,6 @@ systemctl enable gdm.service
 # Clean up and prompt for reboot
 echo "Cleaning up..."
 rm -rf /tmp/*
+clear
 read -p "Factory reset complete. Press Enter to reboot the system..."
 reboot
