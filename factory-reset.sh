@@ -84,6 +84,7 @@ fi
 read -p "Enter the full name of the new user: " new_full_name
 useradd -m -g users -G wheel "$new_username"
 chfn -f "$new_full_name" "$new_username"
+sudo -u "$new_username" /usr/bin/flatpak --user remote-add if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 usermod -aG video "$new_username"
 usermod -aG audio "$new_username"
 passwd "$new_username"  # Set password for the new user
