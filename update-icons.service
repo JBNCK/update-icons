@@ -1,0 +1,10 @@
+[Unit]
+Description=Update legacy icons
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/share/scripts/update-icons.sh 
+
+[Install]
+WantedBy=multi-user.target
